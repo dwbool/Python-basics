@@ -34,7 +34,7 @@ class WarehouseItem:
         super().__init__()
         self.equipment = aequipment
         self.qty=aqty
-        self.dep=adep
+        self.dep=adep.upper()
 
 
 
@@ -52,11 +52,13 @@ class OfficeEquipment:
 
 class Printer(OfficeEquipment):
 
-    def __init__(self, amanufact, amodel):
+    def __init__(self, amanufact, amodel, aresolut, acolor=0):
         super().__init__()
         self.model=amodel
         self.manufact = amanufact
         self.kind="Printer"
+        self.resolution=aresolut
+        self.is_color=acolor
 
 
 class Scanner(OfficeEquipment):
@@ -78,7 +80,7 @@ def find_model(lst, aman, amdl):
 
 def find_item(lst, aman, amdl, dep):
     for i in range(0,len(lst)):
-        if lst[i].equipment.model==amdl and lst[i].equipment.manufact==aman and lst[i].dep==dep:
+        if lst[i].equipment.model.upper() == amdl.upper() and lst[i].equipment.manufact.upper() == aman.upper() and lst[i].dep.upper() == dep.upper():
             return i
     return -1
 
@@ -89,6 +91,10 @@ def lst_models(lst:list):
     print(s)
     for i in range(0,len(lst)):
         s = "%d\t%s\t\t%s\t\t\t\t%s" % (i, lst[i].model,  lst[i].manufact, lst[i].kind )  #OfficeEquipment(lst[i]).manufact
+        if type(lst[i]) is Printer :
+            s += "\t%d dpi" % lst[i].resolution
+            if lst[i].is_color>0:
+                s+="\tcolor"
         print(s)
 
 def lst_warehouse(lst:list):
@@ -118,7 +124,7 @@ def input_positive_int():
 
 
 scn = Scanner("Mustek", "Paragon" )
-prn = Printer("Canon", "MP-160" )
+prn = Printer("Canon", "MP-160", 200, 1)
 lmp = OfficeEquipment( )
 lmp.model="Light"
 lmp.manufact="Deluxe"
@@ -174,8 +180,15 @@ while 1:
         sman = input().strip()
         print("input model")
         mdl = input().strip()
+        print("input resolution")
+        res = input_positive_int()
+
         if find_model(models,sman,mdl)==-1:
-            prn = Printer(sman, mdl)
+            print("type 1 if printer is color, otherwise 0 or empty string")
+            col = input_positive_int()
+            if col==-1:
+                col=0
+            prn = Printer(sman, mdl, res, col)
             models.append(prn)
         else:
             print("already exists")
